@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BINGO: Pidato Presiden</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #fce4ec; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 15px; 
+            overflow-x: hidden; 
+        }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            color: #ff5252;
+            text-shadow: 2px 2px #ffeaa7;
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Styling Kolom Input Link YouTube */
+        .input-section {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 15px;
+        }
+
+        #youtube-url {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 2px solid #fdcb6e;
+            border-radius: 12px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.9em;
+            outline: none;
+            box-shadow: 0 4px 0 #ffeaa7;
+            transition: all 0.2s ease;
+        }
+
+        #youtube-url:focus {
+            border-color: #ff7675;
+            box-shadow: 0 4px 0 #ff7675;
+        }
+
+        #load-video-btn {
+            font-family: 'Fredoka One', cursive;
+            background-color: #00b894;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #00cec9;
+            transition: all 0.2s ease;
+        }
+
+        #load-video-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 transparent;
+        }
+
+        /* Styling Kontainer Video YouTube */
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            padding-bottom: 56.25%; 
+            height: 0;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 0 #f8a5c2;
+            background-color: #2d3436; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            color: white;
+            font-size: 0.9em;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Styling Pilihan Papan BINGO */
+        .board-selector {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 15px;
+        }
+
+        .board-btn {
+            flex: 1;
+            padding: 12px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1em;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            background-color: #dfe6e9;
+            color: #636e72;
+            box-shadow: 0 4px 0 #b2bec3;
+            transition: all 0.2s ease;
+        }
+
+        .board-btn.active {
+            background-color: #ff7675;
+            color: white;
+            box-shadow: 0 4px 0 #d63031;
+        }
+
+        .board-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 transparent;
+        }
+
+        /* Styling Papan BINGO */
+        .bingo-board {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 8px;
+            background-color: #00cec9; 
+            padding: 12px;
+            border-radius: 20px;
+            box-shadow: 0 8px 0 #00b894; 
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .bingo-cell {
+            background-color: white;
+            border-radius: 10px;
+            padding: 5px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65em; 
+            line-height: 1.2;
+            color: #2d3436;
+            cursor: pointer;
+            min-height: 75px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 #dfe6e9;
+            user-select: none;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .bingo-cell:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 transparent;
+        }
+
+        .bingo-cell.marked {
+            background-color: #ffeaa7; 
+            color: #d63031;
+            box-shadow: 0 4px 0 #fdcb6e;
+            text-decoration: line-through;
+            transform: scale(0.95);
+        }
+
+        /* Styling Tombol Reset */
+        #reset-btn {
+            font-family: 'Fredoka One', cursive;
+            background-color: #a29bfe; 
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.2em;
+            border-radius: 15px;
+            box-shadow: 0 6px 0 #6c5ce7;
+            cursor: pointer;
+            margin-top: 25px;
+            margin-bottom: 30px;
+            transition: all 0.2s ease;
+        }
+
+        #reset-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 transparent;
+        }
+
+        /* Pesan Menang */
+        #win-message {
+            display: none;
+            font-family: 'Fredoka One', cursive;
+            color: #0984e3;
+            font-size: 2.5em;
+            margin-top: 20px;
+            text-shadow: 2px 2px #74b9ff;
+            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            text-align: center;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 400px) {
+            .bingo-cell { font-size: 0.55em; min-height: 60px; }
+            .input-section { flex-direction: column; }
+            #load-video-btn { width: 100%; }
+            .board-btn { padding: 10px; font-size: 0.85em; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>BINGO PIDATO</h1>
+    
+    <!-- Input Link YouTube -->
+    <div class="input-section">
+        <input type="text" id="youtube-url" placeholder="Paste link YouTube video di sini...">
+        <button id="load-video-btn">▶ Muat</button>
+    </div>
+
+    <!-- Area Video YouTube -->
+    <div class="video-container" id="video-wrapper">
+        <div class="video-placeholder" id="placeholder-text">Video akan muncul di sini 📺</div>
+        <iframe id="youtube-iframe" src="" title="Video Pidato Presiden" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display: none;"></iframe>
+    </div>
+
+    <!-- Pemilihan Papan -->
+    <div class="board-selector">
+        <button id="btn-papan1" class="board-btn active">Pilihan 1</button>
+        <button id="btn-papan2" class="board-btn">Pilihan 2</button>
+    </div>
+
+    <div class="bingo-board" id="board">
+        <!-- Kotak di-generate oleh JavaScript -->
+    </div>
+
+    <div id="win-message">🎉 BINGO! 🎉</div>
+
+    <!-- Tombol Reset -->
+    <button id="reset-btn">🔄 Reset Papan</button>
+
+    <script>
+        // --- LOGIKA MEMUAT VIDEO YOUTUBE ---
+        const urlInput = document.getElementById('youtube-url');
+        const loadBtn = document.getElementById('load-video-btn');
+        const iframe = document.getElementById('youtube-iframe');
+        const placeholderText = document.getElementById('placeholder-text');
+
+        function extractVideoID(url) {
+            const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/gi;
+            const match = regExp.exec(url);
+            return match ? match[1] : null;
+        }
+
+        function loadVideo() {
+            const url = urlInput.value.trim();
+            if (!url) return;
+            const videoID = extractVideoID(url);
+            
+            if (videoID) {
+                // Penambahan parameter origin agar tidak di-block oleh YouTube saat dijalankan secara lokal
+                iframe.src = `https://www.youtube.com/embed/${videoID}?origin=https://www.youtube.com`;
+                iframe.style.display = 'block';
+                placeholderText.style.display = 'none';
+                playPop(); 
+            } else {
+                alert("Hmm, sepertinya itu bukan link YouTube yang valid. Coba periksa lagi ya!");
+            }
+        }
+
+        loadBtn.addEventListener('click', loadVideo);
+        urlInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') loadVideo();
+        });
+
+        // --- DATA PAPAN BINGO ---
+        const papan1 = [
+            "MBG", "MERDEKA", "PERANG", "MEMBERI MAKAN", "SAUDARA - SAUDARA",
+            "KELAPARAN", "MAKANAN BERGIZI", "KITA INI BANGSA YG BESAR", "IMPOR", "SDM",
+            "HEY !", "SAYA / KITA AKAN", "EKONOMI", "RAKYAT", "NGERI",
+            "KESUSAHAN", "ASING", "DESA", "OKNUM", "ORANG SUSAH",
+            "PETANI", "BERANI", "LAPANGAN KERJA", "TAKUT", "PROGRAM"
+        ];
+
+        const papan2 = [
+            "Kabur Aja", "KopDes", "Salah Hitung", "Negara Maju", "Gaji Guru",
+            "Sawit", "Antek Asing", "Eropa", "TNI", "Nasionalisme",
+            "Rakyat Miskin", "Dollar", "MBG", "Koruptor", "Rupiah",
+            "Nuklir", "Wangsit", "Tenaga Listrik", "Demo", "Amerika",
+            "Ekonomi", "LGBT", "Efisiensi", "Mordernisasi", "Orang Desa"
+        ];
+
+        // --- LOGIKA PERMAINAN BINGO ---
+        const board = document.getElementById('board');
+        let cells = [];
+        let isGameOver = false;
+
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playPop() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playWin() {
+            initAudio();
+            const notes = [440, 554.37, 659.25, 880]; 
+            notes.forEach((freq, i) => {
+                setTimeout(() => {
+                    const osc = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.value = freq;
+                    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.5);
+                }, i * 100);
+            });
+        }
+
+        function renderBoard(dataArray) {
+            board.innerHTML = ''; // Bersihkan papan
+            cells = [];
+            isGameOver = false;
+            document.getElementById('win-message').style.display = 'none';
+
+            dataArray.forEach((kata, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'bingo-cell';
+                cell.textContent = kata;
+                cell.dataset.index = index;
+                
+                cell.addEventListener('click', () => {
+                    if (isGameOver && !cell.classList.contains('marked')) return;
+
+                    cell.classList.toggle('marked');
+                    playPop(); 
+                    checkBingo();
+                });
+
+                board.appendChild(cell);
+                cells.push(cell);
+            });
+        }
+
+        function checkBingo() {
+            const gridSize = 5;
+            let currentBingo = false;
+            
+            let grid = [];
+            for (let i = 0; i < gridSize; i++) {
+                grid.push(cells.slice(i * gridSize, (i + 1) * gridSize).map(c => c.classList.contains('marked')));
+            }
+
+            for (let i = 0; i < gridSize; i++) {
+                if (grid[i].every(val => val === true)) currentBingo = true;
+                if (grid.map(row => row[i]).every(val => val === true)) currentBingo = true;
+            }
+
+            let diag1 = true, diag2 = true;
+            for (let i = 0; i < gridSize; i++) {
+                if (!grid[i][i]) diag1 = false;
+                if (!grid[i][gridSize - 1 - i]) diag2 = false;
+            }
+            if (diag1 || diag2) currentBingo = true;
+
+            const winMessage = document.getElementById('win-message');
+            if (currentBingo && !isGameOver) {
+                isGameOver = true;
+                winMessage.style.display = 'block';
+                playWin(); 
+            } else if (!currentBingo) {
+                isGameOver = false;
+                winMessage.style.display = 'none';
+            }
+        }
+
+        // --- SISTEM PEMILIHAN PAPAN ---
+        const btnPapan1 = document.getElementById('btn-papan1');
+        const btnPapan2 = document.getElementById('btn-papan2');
+
+        btnPapan1.addEventListener('click', () => {
+            if (btnPapan1.classList.contains('active')) return;
+            btnPapan1.classList.add('active');
+            btnPapan2.classList.remove('active');
+            playPop();
+            renderBoard(papan1);
+        });
+
+        btnPapan2.addEventListener('click', () => {
+            if (btnPapan2.classList.contains('active')) return;
+            btnPapan2.classList.add('active');
+            btnPapan1.classList.remove('active');
+            playPop();
+            renderBoard(papan2);
+        });
+
+        // FUNGSI RESET PERMAINAN
+        const resetBtn = document.getElementById('reset-btn');
+        resetBtn.addEventListener('click', () => {
+            cells.forEach(cell => cell.classList.remove('marked'));
+            document.getElementById('win-message').style.display = 'none';
+            isGameOver = false;
+            playPop();
+        });
+
+        // Inisialisasi awal dengan Papan 1
+        renderBoard(papan1);
+    </script>
+</body>
+</html>
